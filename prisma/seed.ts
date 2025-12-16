@@ -1,12 +1,8 @@
 import 'dotenv/config'
 import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL,
-    },
-  },
-})
+
+
+const prisma = new PrismaClient()
 
 async function main() {
   const admin = await prisma.user.upsert({
@@ -18,7 +14,7 @@ async function main() {
       role: 'Admin',
     },
   })
-
+  
   const staff = await prisma.user.upsert({
     where: { username: 'staff' },
     update: {},

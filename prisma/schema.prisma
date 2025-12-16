@@ -1,21 +1,22 @@
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
-model User {
+model Admin {
   id       String @id @default(uuid())
   username String @unique
   password String
-  role     String // Admin, Staff, Trainer
 }
 
 model Member {
   id             String       @id @default(uuid())
+  username       String       @unique
+  password       String
   firstName      String
   lastName       String
   email          String       @unique
@@ -34,6 +35,8 @@ model Member {
 
 model Trainer {
   id             String       @id @default(uuid())
+  username       String       @unique
+  password       String
   name           String
   email          String       @unique
   specialization String?
