@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id       String @id @default(uuid())
+  username String @unique
+  password String
+  role     String // Admin, Staff, Trainer
+}
+
+model Member {
+  id             String       @id @default(uuid())
+  firstName      String
+  lastName       String
+  email          String       @unique
+  phone          String?
+  address        String?
+  joinDate       DateTime     @default(now())
+  status         String       @default("Active") // Active, Inactive
+  membershipEnd  DateTime
+  
+  planId         String?
+  plan           MembershipPlan? @relation(fields: [planId], references: [id])
+
+  payments       Payment[]
+  attendance     Attendance[]
+}
+
+model Trainer {
+  id             String       @id @default(uuid())
+  name           String
+  email          String       @unique
+  specialization String?
+  schedules      Schedule[]
+}
+
+model MembershipPlan {
+  id          String   @id @default(uuid())
+  name        String
+  duration    Int      // in months
+  price       Float
+  description String?
+  
+  members     Member[]
+}
+
+model Payment {
+  id        String   @id @default(uuid())
+  amount    Float
+  date      DateTime @default(now())
+  method    String   // Cash, Card
+  memberId  String
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+}
+
+model Attendance {
+  id        String   @id @default(uuid())
+  date      DateTime @default(now())
+  memberId  String
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+}
+
+model Schedule {
+  id        String   @id @default(uuid())
+  day       String   // Monday, Tuesday, etc.
+  startTime String
+  endTime   String
+  trainerId String
+  trainer   Trainer  @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+}
