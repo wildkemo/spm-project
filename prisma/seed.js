@@ -195,26 +195,6 @@ async function main() {
   }
 
   console.log('Created payments for members');
-
-  // Create Attendance Records
-  for (const member of members) {
-    const numAttendances = Math.floor(Math.random() * 20) + 5;
-    const today = new Date();
-    
-    for (let i = 0; i < numAttendances; i++) {
-      const attendanceDate = new Date(today);
-      attendanceDate.setDate(attendanceDate.getDate() - Math.floor(Math.random() * 60));
-      
-      await prisma.attendance.create({
-        data: {
-          date: attendanceDate,
-          memberId: member.id,
-        },
-      });
-    }
-  }
-
-  console.log('Created attendance records');
   console.log('✅ Seeding completed successfully!');
 }
 

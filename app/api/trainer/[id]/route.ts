@@ -14,6 +14,11 @@ export async function GET(
         schedules: {
           orderBy: { day: 'asc' },
         },
+        members: {
+          include: {
+            member: true,
+          },
+        },
       },
     });
 
@@ -42,9 +47,9 @@ export async function GET(
       totalHours += (endMinutes - startMinutes) / 60;
     });
 
-    // Get count of active members (for demo purposes)
-    const activeMembers = await prisma.member.count({
-      where: { status: 'Active' }
+    // Get count of subscribed members
+    const subscribedMembers = await prisma.memberTrainer.count({
+      where: { trainerId: id }
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -55,7 +60,7 @@ export async function GET(
       stats: {
         todaySchedules: todaySchedules.length,
         totalHoursPerWeek: Math.round(totalHours),
-        activeMembers,
+        activeMembers: subscribedMembers,
       }
     });
   } catch (error) {

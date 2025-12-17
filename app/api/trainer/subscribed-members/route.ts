@@ -13,23 +13,29 @@ export async function GET(request: Request) {
       );
     }
 
-    const attendance = await prisma.attendance.findMany({
-      where: { trainerId },
-      take: 50,
-      orderBy: { date: 'desc' },
+    // Fetch members subscribed to this trainer
+    const subscriptions = await prisma.memberTrainer.findMany({
+      where: {
+        trainerId,
+      },
       include: {
         member: {
-          select: {
-            firstName: true,
-            lastName: true,
+          include: {
+            plan: true,
+            attendance: {
+              orderBy: { date: 'desc' },
+            },
           },
         },
       },
     });
 
-    return NextResponse.json(attendance);
+    // Extract member data from subscriptions
+    const members = subscriptions.map((sub) => sub.member);
+
+    return NextResponse.json(members);
   } catch (error) {
-    console.error('Error fetching attendance:', error);
+    console.error('Error fetching subscribed members:', error);
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }

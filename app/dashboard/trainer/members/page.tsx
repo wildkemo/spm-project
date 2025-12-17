@@ -34,7 +34,15 @@ export default function TrainerMembersPage() {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const response = await fetch('/api/members/active');
+        const user = localStorage.getItem('user');
+        if (!user) {
+          setError('No user data found');
+          setLoading(false);
+          return;
+        }
+
+        const userData = JSON.parse(user);
+        const response = await fetch(`/api/trainer/subscribed-members?trainerId=${userData.id}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch members');
@@ -100,20 +108,20 @@ export default function TrainerMembersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Members</h2>
-        <p className="text-muted-foreground">View and manage gym members.</p>
+        <h2 className="text-3xl font-bold tracking-tight">My Members</h2>
+        <p className="text-muted-foreground">View and manage members subscribed to you.</p>
       </div>
 
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setFilterStatus("all")}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Active</CardTitle>
+            <CardTitle className="text-sm font-medium">My Members</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{members.length}</div>
-            <p className="text-xs text-muted-foreground">active members</p>
+            <p className="text-xs text-muted-foreground">subscribed to you</p>
           </CardContent>
         </Card>
 
@@ -339,7 +347,13 @@ export default function TrainerMembersPage() {
                 );
               })
             ) : (
-              <p className="text-center text-muted-foreground py-8">No members found</p>
+              <div className="text-center py-12">
+                <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-50" />
+                <h3 className="text-lg font-semibold mb-2">No Subscribed Members</h3>
+                <p className="text-sm text-muted-foreground">
+                  You don't have any members subscribed to you yet. Members can subscribe to you from their dashboard.
+                </p>
+              </div>
             )}
           </div>
         </CardContent>

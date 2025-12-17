@@ -1,43 +1,88 @@
+"use client";
+
 import Link from 'next/link';
-import { Plus, Search, MoreHorizontal, Mail, Phone, UserCog } from 'lucide-react';
+import { Plus, Search, MoreHorizontal, Mail, UserCog, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/Table';
+import { useEffect, useState } from 'react';
 
-async function getTrainers() {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/trainers`, {
-      cache: 'no-store'
-    });
-    if (!res.ok) throw new Error('Failed to fetch trainers');
-    return await res.json();
-  } catch (error) {
-    console.error('Error fetching trainers:', error);
-    return [];
-  }
+interface Trainer {
+  id: string;
+  name: string;
+  email: string;
+  specialization: string | null;
 }
 
-async function getSchedules() {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/schedules`, {
-      cache: 'no-store'
-    });
-    if (!res.ok) throw new Error('Failed to fetch schedules');
-    return await res.json();
-  } catch (error) {
-    console.error('Error fetching schedules:', error);
-    return [];
-  }
+interface Schedule {
+  id: string;
+  trainerId: string;
+  day: string;
 }
 
-export default async function TrainersPage() {
-  const trainers = await getTrainers();
-  const schedules = await getSchedules();
+export default function TrainersPage() {
+  const [trainers, setTrainers] = useState<Trainer[]>([]);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
-  // Count schedules per trainer
-  const scheduleCount = (trainerId: string) => {
-    return schedules.filter((s: any) => s.trainerId === trainerId).length;
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const [trainersRes, schedulesRes] = await Promise.all([
+        fetch('/api/trainers', { cache: 'no-store' }),
+        fetch('/api/schedules', { cache: 'no-store' })
+      ]);
+
+      if (trainersRes.ok) {
+        const trainersData = await trainersRes.json();
+        setTrainers(trainersData);
+      }
+
+      if (schedulesRes.ok) {
+        const schedulesData = await schedulesRes.json();
+        setSchedules(schedulesData);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleDelete = async (trainerId: string) => {
+    setDeleting(true);
+    try {
+      const response = await fetch(`/api/trainers?id=${trainerId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to delete trainer');
+      }
+
+      // Refresh the trainers list
+      await fetchData();
+      setDeleteId(null);
+    } catch (error: any) {
+      alert(error.message || 'Error deleting trainer');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const scheduleCount = (trainerId: string) => {
+    return schedules.filter((s) => s.trainerId === trainerId).length;
+  };
+
+  if (loading) {
+    return <div className="flex items-center justify-center h-64">Loading...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -89,14 +134,14 @@ export default async function TrainersPage() {
                 <TableHead className="font-semibold">Contact</TableHead>
                 <TableHead className="font-semibold">Specialization</TableHead>
                 <TableHead className="font-semibold">Schedule</TableHead>
-                <TableHead className="w-[50px]"></TableHead>
+                <TableHead className="w-[100px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {trainers.map((trainer: any) => {
-                const initials = trainer.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
-                const trainerSchedules = schedules.filter((s: any) => s.trainerId === trainer.id);
-                const scheduleDays = [...new Set(trainerSchedules.map((s: any) => s.day))];
+              {trainers.map((trainer) => {
+                const initials = trainer.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+                const trainerSchedules = schedules.filter((s) => s.trainerId === trainer.id);
+                const scheduleDays = [...new Set(trainerSchedules.map((s) => s.day))];
                 
                 return (
                   <TableRow key={trainer.id} className="hover:bg-muted/30 transition-colors duration-200">
@@ -122,7 +167,7 @@ export default async function TrainersPage() {
                     <TableCell>
                       {trainer.specialization ? (
                         <div className="flex flex-wrap gap-1">
-                          {trainer.specialization.split(',').map((spec: string, idx: number) => (
+                          {trainer.specialization.split(',').map((spec, idx) => (
                             <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
                               {spec.trim()}
                             </span>
@@ -145,8 +190,13 @@ export default async function TrainersPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted">
-                        <MoreHorizontal className="w-4 h-4" />
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/30"
+                        onClick={() => setDeleteId(trainer.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -154,6 +204,36 @@ export default async function TrainersPage() {
               })}
             </TableBody>
           </Table>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-card border rounded-xl p-6 max-w-md w-full shadow-xl">
+            <h3 className="text-lg font-semibold mb-2">Delete Trainer</h3>
+            <p className="text-muted-foreground mb-6">
+              Are you sure you want to delete this trainer? This action cannot be undone and will also delete all related schedules, attendance records, and member subscriptions.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <Button 
+                variant="outline" 
+                onClick={() => setDeleteId(null)}
+                disabled={deleting}
+              >
+                Cancel
+              </Button>
+              <Button 
+                variant="destructive" 
+                onClick={() => handleDelete(deleteId)}
+                disabled={deleting}
+                className="gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                {deleting ? 'Deleting...' : 'Delete'}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>

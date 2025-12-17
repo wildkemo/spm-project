@@ -60,3 +60,42 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 })
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { message: 'Trainer ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Check if trainer exists
+    const trainer = await prisma.trainer.findUnique({
+      where: { id },
+    });
+
+    if (!trainer) {
+      return NextResponse.json(
+        { message: 'Trainer not found' },
+        { status: 404 }
+      );
+    }
+
+    // Delete trainer (cascade will handle related records)
+    await prisma.trainer.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ message: 'Trainer deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting trainer:', error);
+    return NextResponse.json(
+      { message: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

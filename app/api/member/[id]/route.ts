@@ -18,6 +18,11 @@ export async function GET(
         attendance: {
           orderBy: { date: 'desc' },
         },
+        trainers: {
+          include: {
+            trainer: true,
+          },
+        },
       },
     });
 

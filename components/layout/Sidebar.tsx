@@ -45,6 +45,7 @@ export function Sidebar({ role = 'admin' }: SidebarProps) {
     navItems = [
       { name: 'Dashboard', href: '/dashboard/member', icon: LayoutDashboard },
       { name: 'My Plan', href: '/dashboard/member/plan', icon: Dumbbell },
+      { name: 'My Trainers', href: '/dashboard/member/trainers', icon: Users },
       { name: 'My Attendance', href: '/dashboard/member/attendance', icon: CalendarCheck },
     ];
   }

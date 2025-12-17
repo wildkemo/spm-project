@@ -33,7 +33,15 @@ export default function TrainerAttendancePage() {
 
   const fetchAttendance = async () => {
     try {
-      const response = await fetch('/api/attendance/recent');
+      const user = localStorage.getItem('user');
+      if (!user) {
+        setError('No user data found');
+        setLoading(false);
+        return;
+      }
+
+      const userData = JSON.parse(user);
+      const response = await fetch(`/api/attendance/recent?trainerId=${userData.id}`);
       if (!response.ok) throw new Error('Failed to fetch attendance');
       const data = await response.json();
       setAttendance(data);
@@ -51,7 +59,13 @@ export default function TrainerAttendancePage() {
 
   const fetchMembers = async () => {
     try {
-      const response = await fetch('/api/members/active');
+      const user = localStorage.getItem('user');
+      if (!user) {
+        return;
+      }
+
+      const userData = JSON.parse(user);
+      const response = await fetch(`/api/trainer/subscribed-members?trainerId=${userData.id}`);
       if (!response.ok) throw new Error('Failed to fetch members');
       const data = await response.json();
       setMembers(data);
@@ -72,10 +86,17 @@ export default function TrainerAttendancePage() {
     setSuccessMessage("");
     
     try {
+      const user = localStorage.getItem('user');
+      if (!user) {
+        throw new Error('No user data found');
+      }
+
+      const userData = JSON.parse(user);
+      
       const response = await fetch('/api/attendance/check-in', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ memberId }),
+        body: JSON.stringify({ memberId, trainerId: userData.id }),
       });
 
       const data = await response.json();

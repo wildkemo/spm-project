@@ -31,6 +31,7 @@ model Member {
 
   payments       Payment[]
   attendance     Attendance[]
+  trainers       MemberTrainer[]
 }
 
 model Trainer {
@@ -41,6 +42,8 @@ model Trainer {
   email          String       @unique
   specialization String?
   schedules      Schedule[]
+  members        MemberTrainer[]
+  attendance     Attendance[]
 }
 
 model MembershipPlan {
@@ -66,7 +69,9 @@ model Attendance {
   id        String   @id @default(uuid())
   date      DateTime @default(now())
   memberId  String
+  trainerId String
   member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  trainer   Trainer  @relation(fields: [trainerId], references: [id], onDelete: Cascade)
 }
 
 model Schedule {
@@ -76,4 +81,16 @@ model Schedule {
   endTime   String
   trainerId String
   trainer   Trainer  @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+}
+
+model MemberTrainer {
+  id           String   @id @default(uuid())
+  memberId     String
+  trainerId    String
+  subscribedAt DateTime @default(now())
+  
+  member       Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  trainer      Trainer  @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+  
+  @@unique([memberId, trainerId])
 }

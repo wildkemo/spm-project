@@ -123,7 +123,7 @@ export default function TrainerDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-600">{trainerData.stats.activeMembers}</div>
-            <p className="text-xs text-muted-foreground mt-1">in the gym</p>
+            <p className="text-xs text-muted-foreground mt-1">subscribed to you</p>
             <div className="mt-2 flex items-center gap-1 text-xs text-green-600">
               <TrendingUp className="h-3 w-3" />
               <span>Growing community!</span>

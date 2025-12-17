@@ -4,11 +4,18 @@ import { prisma } from '@/lib/prisma';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { memberId } = body;
+    const { memberId, trainerId } = body;
 
     if (!memberId) {
       return NextResponse.json(
         { message: 'Member ID is required' },
+        { status: 400 }
+      );
+    }
+
+    if (!trainerId) {
+      return NextResponse.json(
+        { message: 'Trainer ID is required' },
         { status: 400 }
       );
     }
@@ -36,6 +43,7 @@ export async function POST(request: Request) {
     const attendance = await prisma.attendance.create({
       data: {
         memberId,
+        trainerId,
         date: new Date(),
       },
       include: {
