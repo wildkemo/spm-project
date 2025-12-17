@@ -95,111 +95,136 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/40 p-4">
-      <Card className="w-full max-w-md border-primary/10 shadow-xl">
+    <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900 via-slate-900 to-black p-4 relative overflow-hidden">
+      {/* Background Decorative Elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-600/20 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/20 rounded-full blur-[120px]" />
+      </div>
+
+      <Card className="w-full max-w-md border-white/10 shadow-2xl bg-black/40 backdrop-blur-xl relative z-10">
         <CardHeader className="space-y-4 text-center pb-6">
-            <div className="mx-auto w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary mb-2">
+            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white mb-2 shadow-lg shadow-indigo-500/20 transform hover:scale-105 transition-transform duration-300">
                  <Dumbbell className="w-8 h-8" />
             </div>
             <div>
-                <h1 className="text-2xl font-bold tracking-tight">GMS Pro</h1>
-                 <p className="text-sm text-muted-foreground">Gym Management System</p>
+                <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">GMS Pro</h1>
+                 <p className="text-sm text-muted-foreground mt-1">Gym Management System</p>
             </div>
         </CardHeader>
         
         <div className="px-6 mb-6">
-            <div className="grid grid-cols-3 p-1 bg-muted rounded-lg border border-border">
+            <div className="grid grid-cols-3 p-1.5 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm">
                 <button
                     onClick={() => handleTypeChange('admin')}
                     className={cn(
-                        "flex items-center justify-center gap-2 text-xs font-medium py-2 rounded-md transition-all",
-                        loginType === 'admin' ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                        "flex flex-col sm:flex-row items-center justify-center gap-2 text-xs font-medium py-2.5 rounded-lg transition-all duration-200",
+                        loginType === 'admin' 
+                          ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg" 
+                          : "text-muted-foreground hover:text-white hover:bg-white/5"
                     )}
                 >
-                    <ShieldCheck className="w-3 h-3" />
-                    Admin
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>Admin</span>
                 </button>
                 <button
                     onClick={() => handleTypeChange('trainer')}
                     className={cn(
-                        "flex items-center justify-center gap-2 text-xs font-medium py-2 rounded-md transition-all",
-                        loginType === 'trainer' ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                        "flex flex-col sm:flex-row items-center justify-center gap-2 text-xs font-medium py-2.5 rounded-lg transition-all duration-200",
+                        loginType === 'trainer' 
+                          ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg" 
+                          : "text-muted-foreground hover:text-white hover:bg-white/5"
                     )}
                 >
-                    <Dumbbell className="w-3 h-3" />
-                    Trainer
+                    <Dumbbell className="w-4 h-4" />
+                    <span>Trainer</span>
                 </button>
                 <button
                     onClick={() => handleTypeChange('member')}
                     className={cn(
-                        "flex items-center justify-center gap-2 text-xs font-medium py-2 rounded-md transition-all",
-                        loginType === 'member' ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                        "flex flex-col sm:flex-row items-center justify-center gap-2 text-xs font-medium py-2.5 rounded-lg transition-all duration-200",
+                        loginType === 'member' 
+                          ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg" 
+                          : "text-muted-foreground hover:text-white hover:bg-white/5"
                     )}
                 >
-                    <Users className="w-3 h-3" />
-                    Member
+                    <Users className="w-4 h-4" />
+                    <span>Member</span>
                 </button>
             </div>
         </div>
 
         <form onSubmit={handleLogin}>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-5">
             {error && (
-              <div className="p-3 text-sm text-red-500 bg-red-50 rounded-md">
+              <div className="p-4 text-sm font-medium text-red-200 bg-red-500/10 border border-red-500/20 rounded-lg animate-in fade-in slide-in-from-top-2">
                 {error}
               </div>
             )}
             
-            <div className="space-y-2">
-                <Label htmlFor="username">
+            <div className="space-y-2.5">
+                <Label htmlFor="username" className="text-sm font-medium text-white/80 ml-1">
                     {loginType === 'member' ? 'Member ID / Username' : 'Username'}
                 </Label>
-                <Input 
-                    id="username" 
-                    type="text" 
-                    placeholder={loginType === 'member' ? "Enter your username" : "admin"}
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                />
+                <div className="relative group">
+                  <Input 
+                      id="username" 
+                      type="text" 
+                      placeholder={loginType === 'member' ? "Enter your username" : "Enter your username"}
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      required
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-indigo-500 focus:ring-indigo-500/20 h-11 transition-all"
+                  />
+                  <div className="absolute bottom-0 left-0 h-[1px] w-0 bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-300 group-focus-within:w-full" />
+                </div>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
-                  <Link href="#" className="text-xs text-primary hover:underline">Forgot password?</Link>
+            <div className="space-y-2.5">
+              <div className="flex items-center justify-between ml-1">
+                  <Label htmlFor="password" className="text-sm font-medium text-white/80">Password</Label>
+                  <Link href="#" className="text-xs text-indigo-400 hover:text-indigo-300 hover:underline transition-colors">Forgot password?</Link>
               </div>
-              <Input 
-                id="password" 
-                type="password" 
-                value={password ?? ''}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              <div className="relative group">
+                <Input 
+                  id="password" 
+                  type="password" 
+                  value={password ?? ''}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  placeholder="••••••••"
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-indigo-500 focus:ring-indigo-500/20 h-11 transition-all"
+                />
+                <div className="absolute bottom-0 left-0 h-[1px] w-0 bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-300 group-focus-within:w-full" />
+              </div>
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-             <Button className="w-full gap-2" type="submit" disabled={isLoading}>
+          <CardFooter className="flex flex-col gap-5 pt-2">
+             <Button 
+                className="w-full h-11 gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-[1.02]" 
+                type="submit" 
+                disabled={isLoading}
+             >
                 {isLoading ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin" />
                     Signing in...
                   </>
                 ) : (
                   <>
                     Sign In
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-5 h-5" />
                   </>
                 )}
              </Button>
-             <p className="text-xs text-muted-foreground text-center mt-2">
+             <p className="text-xs text-white/40 text-center">
               Powering fitness journey since 2024
              </p>
           </CardFooter>
         </form>
       </Card>
       
-       <div className="fixed bottom-6 text-center w-full text-xs text-muted-foreground">
+       <div className="fixed bottom-6 text-center w-full text-xs text-white/20">
         &copy; 2024 GMS Pro. All rights reserved.
       </div>
     </div>
