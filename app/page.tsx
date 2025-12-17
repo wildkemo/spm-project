@@ -192,12 +192,6 @@ export default function LoginPage() {
                   </>
                 )}
              </Button>
-             <div className="text-center text-sm">
-                Don't have an account?{' '}
-                <Link href="/register" className="font-medium text-primary hover:underline">
-                    Register here
-                </Link>
-             </div>
              <p className="text-xs text-muted-foreground text-center mt-2">
               Powering fitness journey since 2024
              </p>

@@ -31,7 +31,7 @@ export function Sidebar({ role = 'admin' }: SidebarProps) {
       { name: 'Trainers', href: '/dashboard/trainers', icon: Users },
       { name: 'Plans', href: '/dashboard/plans', icon: Dumbbell },
       { name: 'Payments', href: '/dashboard/payments', icon: CreditCard },
-      { name: 'Attendance', href: '/dashboard/attendance', icon: CalendarCheck },
+
       { name: 'Schedule', href: '/dashboard/schedule', icon: CalendarDays },
     ];
   } else if (role === 'trainer') {
